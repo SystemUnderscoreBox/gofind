@@ -9,12 +9,16 @@ import (
 
 // gofind -- the soon-to-be replacement for the Unix command "find"
 // Plan:
-// 1. Make the file emulate the core functionality of "find", e.g. to find the named file
-// 1.1 Currently finds the first instance of file name, must report all instances
-// 1.2 At the end of each run, signal SIGSEGV gets outputed. Figure that out later.
 // 2. Create test file
 // 3. Compile binary and run
 // 4. In the future, expand functionalities and maybe implement "grep"
+
+// Variable slice of matches
+var (
+	matches []string
+	Red     = "\033[31m"
+	Reset   = "\033[0m"
+)
 
 func main() {
 	if err := handleInput(os.Args[1]); err != nil {
@@ -44,8 +48,20 @@ func handleInput(input string) error {
 	}
 
 	// Call this function recursively in case of nested folders.
-	if err := helperFunction(entries, input, dir); err != nil {
-		return errors.New("no match found, sorry!\n")
+	switch err := helperFunction(entries, input, dir); err.Error() {
+	// "no match" means complete search has completed, regardless if found or not.
+	case "no match":
+		if len(matches) == 0 {
+			return errors.New("found no matches\n")
+		}
+
+		for match := range len(matches) {
+			coloredMatch := Red + matches[match] + Reset
+			fmt.Printf("found in: %s\n", coloredMatch)
+		}
+	// If for some reason a failure happens, return err.
+	case "fail":
+		return err
 	}
 
 	return nil
@@ -86,8 +102,8 @@ func helperFunction(entries []os.DirEntry, input, dir string) error {
 
 		// Here we check the entry's name, at this point, entry must be a file.
 		if input == entry.Name() {
-			fmt.Printf("match found in directory: %s\n", dir)
-			return nil
+			matches = append(matches, dir)
+			continue
 		}
 	}
 
