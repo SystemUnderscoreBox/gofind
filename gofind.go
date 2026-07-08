@@ -86,7 +86,7 @@ func helperFunction(entries []os.DirEntry, input, dir string) error {
 			entriesNew, err := os.ReadDir(dir)
 
 			// Skip to next entry in case ReadDir fails.
-			// Print out error and move to next entry.
+			// Prints out error.
 			if err != nil {
 				fmt.Printf("error: %v\n", err)
 				dir = strings.TrimSuffix(dir, entry.Name())
