@@ -4,16 +4,18 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
+	"time"
 )
 
-// gofind -- the soon-to-be replacement for the Unix command "find"
+// gofind — the soon-to-be replacement for the Unix command "find"
 // Plan:
 // 2. Create test file
 // 3. Compile binary and run
 // 4. In the future, expand functionalities and maybe implement "grep"
 
-// Variable slice of matches
+// Variable slice of matches and color codes for better output.
 var (
 	matches []string
 	Red     = "\033[31m"
@@ -21,10 +23,16 @@ var (
 )
 
 func main() {
+	t := time.Now()
 	if err := handleInput(os.Args[1]); err != nil {
 		fmt.Printf("find failed, error: %v", err)
+		e := time.Now()
+		fmt.Println("time elapsed: " + strconv.FormatFloat(e.Sub(t).Seconds(), 'f', -1, 64) + " seconds")
 		os.Exit(1)
 	}
+
+	e := time.Now()
+	fmt.Println("time elapsed: " + strconv.FormatFloat(e.Sub(t).Seconds(), 'f', -1, 64) + " seconds")
 
 	os.Exit(0)
 }
@@ -56,8 +64,8 @@ func handleInput(input string) error {
 		}
 
 		for match := range len(matches) {
-			coloredMatch := Red + matches[match] + Reset
-			fmt.Printf("found in: %s\n", coloredMatch)
+			coloredMatch := Red + matches[match] + "/" + input + Reset
+			fmt.Printf("found: %s\n", coloredMatch)
 		}
 	// If for some reason a failure happens, return err.
 	case "fail":
@@ -77,9 +85,13 @@ func helperFunction(entries []os.DirEntry, input, dir string) error {
 
 			entriesNew, err := os.ReadDir(dir)
 
+			// Skip to next entry in case ReadDir fails.
+			// Print out error and move to next entry.
 			if err != nil {
 				fmt.Printf("error: %v\n", err)
-				return errors.New("failed to read dir entries")
+				dir = strings.TrimSuffix(dir, entry.Name())
+				dir = strings.TrimSuffix(dir, "/")
+				continue
 			}
 
 			if len(entriesNew) == 0 {
