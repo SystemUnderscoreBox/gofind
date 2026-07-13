@@ -10,12 +10,15 @@ import (
 )
 
 // gofind — the soon-to-be replacement for the Unix command "find"
-// Plan:
-// 2. Create test file
-// 3. Compile binary and run
-// 4. In the future, expand functionalities and maybe implement "grep"
+// Dynamic plan:
+// Add support for regex
+// Add support for flags (e.g. --help)
+// --help only works if gofind called in gofind repo, must be worked out on
+// Create test file
+// Compile binary and run
+// In the future, expand functionalities and maybe implement "grep"
 
-// Variable slice of matches and color codes for better output.
+// Slice of matches and color codes for better output.
 var (
 	matches []string
 	Red     = "\033[31m"
@@ -23,8 +26,30 @@ var (
 )
 
 func main() {
+	// If binary is only called w/o further inputs, print help as default
+	if len(os.Args) == 1 {
+		handleHelp()
+		os.Exit(0)
+	} else if os.Args[1] == "--help" {
+		handleHelp()
+		os.Exit(0)
+	}
+
+	// If flag is included, check first it's in position [1]
+	// If too many inputs are given, exit with code 0
+	// NOTE: Currently does NOT support file name with literal '-' included
+	var findFile string
+	if len(os.Args) == 3 && !strings.Contains(os.Args[2], "-") {
+		findFile = os.Args[2]
+	} else if len(os.Args) > 3 {
+		fmt.Println("too many arguments passed, only one flag is supported")
+		os.Exit(0)
+	} else if len(os.Args) == 2 && !strings.Contains(os.Args[1], "-") {
+		findFile = os.Args[1]
+	}
+
 	t := time.Now()
-	if err := handleInput(os.Args[1]); err != nil {
+	if err := handleInput(findFile); err != nil {
 		fmt.Printf("find failed, error: %v", err)
 		e := time.Now()
 		fmt.Println("time elapsed: " + strconv.FormatFloat(e.Sub(t).Seconds(), 'f', -1, 64) + " seconds")
@@ -32,9 +57,21 @@ func main() {
 	}
 
 	e := time.Now()
-	fmt.Println("time elapsed: " + strconv.FormatFloat(e.Sub(t).Seconds(), 'f', -1, 64) + " seconds")
+	// If flag for time was used, print time elapsed, else skip
+	if os.Args[1] == "-t" || os.Args[1] == "--time-elapsed" {
+		fmt.Println("time elapsed: " + strconv.FormatFloat(e.Sub(t).Seconds(), 'f', -1, 64) + " seconds")
+	}
 
 	os.Exit(0)
+}
+
+func handleHelp() {
+	data, err := os.ReadFile("stdout/help.txt")
+	if err != nil {
+		fmt.Printf("error: %v\n", err)
+	}
+
+	fmt.Println(string(data))
 }
 
 func handleInput(input string) error {
