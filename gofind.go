@@ -13,7 +13,7 @@ import (
 // Dynamic plan:
 // Add support for regex
 // Add support for flags (e.g. --help)
-// --help only works if gofind called in gofind repo, must be worked out on
+// --help only works if gofind called repo with stdout included, must be worked out on
 // Create test file
 // Compile binary and run
 // In the future, expand functionalities and maybe implement "grep"
