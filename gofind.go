@@ -1,3 +1,4 @@
+// gofind — the soon-to-be replacement for the Unix command "find"
 package main
 
 import (
@@ -11,16 +12,8 @@ import (
 	"time"
 )
 
-// gofind — the soon-to-be replacement for the Unix command "find"
-// Dynamic plan:
-// Add support for regex, current scope: support '*' expressions after pattern (e.g. gofind*)
-// Add support for flags (currently needs support: -d, -s)
-// Create test file
-// Compile binary and run
-// In the future, expand functionalities and maybe implement "grep"
-
-// Slice of matches and color codes for better output.
 var (
+	// Slice of matches
 	matches []string
 	Red     = "\033[31m"
 	Reset   = "\033[0m"

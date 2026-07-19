@@ -17,5 +17,6 @@ Output control:
     -d, --directory      search for directories
     -t, --time-elapsed   include time elapsed in output
     -s, --source         specify source path 
+    -v, --verbose        outputs every search gofind does
 
 Report bugs to Github: <https://github.com/SystemUnderscoreBox/gofind> 
