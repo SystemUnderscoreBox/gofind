@@ -1,6 +1,7 @@
 package main
 
 import (
+	"embed"
 	"errors"
 	"fmt"
 	"os"
@@ -12,8 +13,8 @@ import (
 
 // gofind — the soon-to-be replacement for the Unix command "find"
 // Dynamic plan:
-// Add support for regex, current scope: support '*' expressions
-// Add support for flags (currently needs support: -d)
+// Add support for regex, current scope: support '*' expressions after pattern (e.g. gofind*)
+// Add support for flags (currently needs support: -d, -s)
 // --help only works if gofind called repo with stdout included, must be worked out on
 // Create test file
 // Compile binary and run
@@ -24,6 +25,9 @@ var (
 	matches []string
 	Red     = "\033[31m"
 	Reset   = "\033[0m"
+
+	//go:embed stdout/help.txt
+	helpFile embed.FS
 )
 
 func main() {
@@ -98,7 +102,7 @@ func main() {
 }
 
 func handleHelp() {
-	data, err := os.ReadFile("stdout/help.txt")
+	data, err := helpFile.ReadFile("stdout/help.txt")
 	if err != nil {
 		fmt.Printf("error: %v\n", err)
 	}
