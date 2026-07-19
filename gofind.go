@@ -15,7 +15,6 @@ import (
 // Dynamic plan:
 // Add support for regex, current scope: support '*' expressions after pattern (e.g. gofind*)
 // Add support for flags (currently needs support: -d, -s)
-// --help only works if gofind called repo with stdout included, must be worked out on
 // Create test file
 // Compile binary and run
 // In the future, expand functionalities and maybe implement "grep"
