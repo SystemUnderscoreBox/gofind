@@ -22,52 +22,103 @@ var (
 	helpFile embed.FS
 )
 
+// Struct containing all available flags
+type ParameterFlags struct {
+	verbose   bool
+	directory bool
+	source    string
+	time      bool
+	help      bool
+	file      string
+	literal   bool
+}
+
+func parseStruct() *ParameterFlags {
+	pF := ParameterFlags{}
+
+	for i, arg := range os.Args {
+		// Skip first argument (i.e. gofind)
+		if i == 0 {
+			continue
+		}
+
+		// When last arg is the file to be found populate field
+		// Handle also literal and non-literal file names
+		if !pF.literal && i == len(os.Args)-1 && !strings.Contains(arg, "-") {
+			pF.file = arg
+			break
+		} else if pF.literal && i == len(os.Args)-1 {
+			pF.file = arg
+			break
+		}
+
+		switch arg {
+		case "-v":
+			pF.verbose = true
+		case "--verbose":
+			pF.verbose = true
+		case "-d":
+			pF.directory = true
+		case "--directory":
+			pF.directory = true
+		case "-s":
+			pF.source = os.Args[i+1]
+		case "--source":
+			pF.source = os.Args[i+1]
+		case "-t":
+			pF.time = true
+		case "--time-elapsed":
+			pF.time = true
+		case "-h":
+			pF.help = true
+		case "--help":
+			pF.help = true
+		case "-l":
+			pF.literal = true
+		case "--literal":
+			pF.literal = true
+		default:
+			fmt.Println("unknown flag: use --help for list of flags")
+			return nil
+		}
+	}
+
+	return &pF
+}
+
 func main() {
-	// If binary is only called w/o further inputs, print help as default
-	if len(os.Args) == 1 {
-		handleHelp()
+	// Start by parsing inputs
+	params := parseStruct()
+	if params == nil {
 		os.Exit(0)
-	} else if os.Args[1] == "--help" {
+	}
+
+	if params.help {
 		handleHelp()
 		os.Exit(0)
 	}
 
-	// If flag is included, check first it's in position [1]
-	// If too many inputs are given, exit with code 0
-	// NOTE: Currently does NOT support file name with literal '-' included
-	var findFile string
-	if len(os.Args) == 3 && !strings.Contains(os.Args[2], "-") {
-		findFile = os.Args[2]
-	} else if len(os.Args) > 3 {
-		fmt.Println("too many arguments passed, only one flag is supported")
-		os.Exit(0)
-	} else if len(os.Args) == 2 && !strings.Contains(os.Args[1], "-") {
-		findFile = os.Args[1]
-	}
-
+	findFile := params.file
 	// In case of regular expressions including one asterisk (*) in input
-	// Call different handle function (handleRegex)
-	// This part is still very WIP !!!
-	// Works for simple queries, e.g. *.pdf
+	// Works (currently) for simple queries, e.g. *.pdf
 	if strings.Contains(findFile, "*") && len(findFile) == 1 {
 		fmt.Println("will not search for every file")
 		os.Exit(0)
 	} else if strings.Contains(findFile, "*") {
 		t := time.Now()
 
-		// Call different type of handleInput, i.e. handleRegex
+		// Use handleRegex for regex searches
 		if err := handleRegex(findFile); err != nil {
 			fmt.Printf("find failed, error: %v", err)
 			e := time.Now()
-			if os.Args[1] == "-t" || os.Args[1] == "--time-elapsed" {
+			if params.time {
 				fmt.Println("time elapsed: " + strconv.FormatFloat(e.Sub(t).Seconds(), 'f', -1, 64) + " seconds")
 			}
 			os.Exit(1)
 		}
 
 		e := time.Now()
-		// If flag for time was used, print time elapsed, else skip
-		if os.Args[1] == "-t" || os.Args[1] == "--time-elapsed" {
+		if params.time {
 			fmt.Println("time elapsed: " + strconv.FormatFloat(e.Sub(t).Seconds(), 'f', -1, 64) + " seconds")
 		}
 
@@ -78,15 +129,14 @@ func main() {
 	if err := handleInput(findFile); err != nil {
 		fmt.Printf("find failed, error: %v", err)
 		e := time.Now()
-		if os.Args[1] == "-t" || os.Args[1] == "--time-elapsed" {
+		if params.time {
 			fmt.Println("time elapsed: " + strconv.FormatFloat(e.Sub(t).Seconds(), 'f', -1, 64) + " seconds")
 		}
 		os.Exit(1)
 	}
 
 	e := time.Now()
-	// If flag for time was used, print time elapsed, else skip
-	if os.Args[1] == "-t" || os.Args[1] == "--time-elapsed" {
+	if params.time {
 		fmt.Println("time elapsed: " + strconv.FormatFloat(e.Sub(t).Seconds(), 'f', -1, 64) + " seconds")
 	}
 
