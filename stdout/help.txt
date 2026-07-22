@@ -2,7 +2,7 @@
 gofind — the replacement for the GNU/Linux bash command "find"
 ==============================================================
 
-Usage: gofind [-h | --help] [-d | --directory] [-t | --time-elapsed] 
+Usage: gofind [-h | --help] [-d | --directory] [-t | --time-elapsed]
        [-s | --source <path>] FILE
 Find the path(s) for FILE.
 Examples: gofind myfile.go
@@ -16,8 +16,8 @@ with '--help'. Below is a list of supported commands.
 Output control:
     -d, --directory      search for directories
     -t, --time-elapsed   include time elapsed in output
-    -s, --source         specify source path 
+    -s, --source         specify source path
     -v, --verbose        outputs every search gofind does
     -l, --literal        search for literal FILE name (e.g. literal "*.pdf")
 
-Report bugs to Github: <https://github.com/SystemUnderscoreBox/gofind> 
+Report bugs to Github: <https://github.com/SystemUnderscoreBox/gofind>

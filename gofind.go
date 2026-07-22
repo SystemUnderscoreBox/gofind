@@ -78,7 +78,7 @@ func parseStruct() *ParameterFlags {
 		case "--literal":
 			pF.literal = true
 		default:
-			fmt.Println("unknown flag: use --help for list of flags")
+			fmt.Println("unknown input: use --help for list of flags")
 			return nil
 		}
 	}
@@ -108,7 +108,7 @@ func main() {
 		t := time.Now()
 
 		// Use handleRegex for regex searches
-		if err := handleRegex(findFile); err != nil {
+		if err := handleRegex(findFile, params); err != nil {
 			fmt.Printf("find failed, error: %v", err)
 			e := time.Now()
 			if params.time {
@@ -126,7 +126,7 @@ func main() {
 	}
 
 	t := time.Now()
-	if err := handleInput(findFile); err != nil {
+	if err := handleInput(findFile, params); err != nil {
 		fmt.Printf("find failed, error: %v", err)
 		e := time.Now()
 		if params.time {
@@ -152,9 +152,7 @@ func handleHelp() {
 	fmt.Println(string(data))
 }
 
-func handleRegex(input string) error {
-	fmt.Printf("You wrote: %s\n", input)
-
+func handleRegex(input string, params *ParameterFlags) error {
 	seqs := strings.Split(input, "*")
 
 	// TODO: Currently only supports one instance (e.g. "*.mp4")
@@ -180,7 +178,7 @@ func handleRegex(input string) error {
 	}
 
 	// Call this function recursively.
-	switch err := handleRegexHelper(entries, input, dir, re); err.Error() {
+	switch err := handleRegexHelper(entries, dir, re, params); err.Error() {
 	// "no match" means complete search has completed, regardless if found or not.
 	case "no match":
 		if len(matches) == 0 {
@@ -199,13 +197,21 @@ func handleRegex(input string) error {
 	return nil
 }
 
-func handleRegexHelper(entries []os.DirEntry, input string, dir string, re *regexp.Regexp) error {
+func handleRegexHelper(entries []os.DirEntry, dir string, re *regexp.Regexp, params *ParameterFlags) error {
 	for i := range len(entries) {
 		entry := entries[i]
 
 		if entry.IsDir() {
+			// Use when searching for directories
+			if params.directory && params.file == entry.Name() {
+				matches = append(matches, dir)
+			}
+
 			dir = dir + "/" + entry.Name()
-			fmt.Println(dir)
+
+			if params.verbose {
+				fmt.Println(dir)
+			}
 
 			entriesNew, err := os.ReadDir(dir)
 
@@ -224,7 +230,7 @@ func handleRegexHelper(entries []os.DirEntry, input string, dir string, re *rege
 				continue
 			}
 
-			switch err := handleRegexHelper(entriesNew, input, dir, re); err.Error() {
+			switch err := handleRegexHelper(entriesNew, dir, re, params); err.Error() {
 			// If folder has no matching files, go back and go to next entry.
 			case "no match":
 				dir = strings.TrimSuffix(dir, entry.Name())
@@ -238,7 +244,7 @@ func handleRegexHelper(entries []os.DirEntry, input string, dir string, re *rege
 
 		// Here we check the entry's name, at this point, entry must be a file.
 		str := re.FindString(entry.Name())
-		if str == entry.Name() {
+		if !params.directory && str == entry.Name() {
 			dir = dir + "/" + re.FindString(entry.Name())
 			matches = append(matches, dir)
 			dir = strings.TrimSuffix(dir, re.FindString(entry.Name()))
@@ -250,9 +256,7 @@ func handleRegexHelper(entries []os.DirEntry, input string, dir string, re *rege
 	return errors.New("no match")
 }
 
-func handleInput(input string) error {
-	fmt.Printf("You wrote: %s\n", input)
-
+func handleInput(input string, params *ParameterFlags) error {
 	// Next, start to look for given file.
 	dir, err := os.Getwd()
 
@@ -269,7 +273,7 @@ func handleInput(input string) error {
 	}
 
 	// Call this function recursively in case of nested folders.
-	switch err := helperFunction(entries, input, dir); err.Error() {
+	switch err := helperFunction(entries, dir, params); err.Error() {
 	// "no match" means complete search has completed, regardless if found or not.
 	case "no match":
 		if len(matches) == 0 {
@@ -288,13 +292,21 @@ func handleInput(input string) error {
 	return nil
 }
 
-func helperFunction(entries []os.DirEntry, input, dir string) error {
+func helperFunction(entries []os.DirEntry, dir string, params *ParameterFlags) error {
 	for i := range len(entries) {
 		entry := entries[i]
 
 		if entry.IsDir() {
+			// Use when searching for directories
+			if params.directory && params.file == entry.Name() {
+				matches = append(matches, dir)
+			}
+
 			dir = dir + "/" + entry.Name()
-			fmt.Println(dir)
+
+			if params.verbose {
+				fmt.Println(dir)
+			}
 
 			entriesNew, err := os.ReadDir(dir)
 
@@ -313,7 +325,7 @@ func helperFunction(entries []os.DirEntry, input, dir string) error {
 				continue
 			}
 
-			switch err := helperFunction(entriesNew, input, dir); err.Error() {
+			switch err := helperFunction(entriesNew, dir, params); err.Error() {
 			// If folder has no matching files, go back and go to next entry.
 			case "no match":
 				dir = strings.TrimSuffix(dir, entry.Name())
@@ -326,7 +338,7 @@ func helperFunction(entries []os.DirEntry, input, dir string) error {
 		}
 
 		// Here we check the entry's name, at this point, entry must be a file.
-		if input == entry.Name() {
+		if !params.directory && params.file == entry.Name() {
 			matches = append(matches, dir)
 			continue
 		}
