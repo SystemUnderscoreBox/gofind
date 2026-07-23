@@ -33,6 +33,7 @@ type ParameterFlags struct {
 	literal   bool
 }
 
+// parseStruct reads input flags as populates ParameterFlags.
 func parseStruct() *ParameterFlags {
 	pF := ParameterFlags{}
 
@@ -44,11 +45,15 @@ func parseStruct() *ParameterFlags {
 
 		// When last arg is the file to be found populate field
 		// Handle also literal and non-literal file names
+		// Handle case when source dir is given and index on source, break and populate pF.file
 		if !pF.literal && i == len(os.Args)-1 && !strings.Contains(arg, "-") {
 			pF.file = arg
 			break
 		} else if pF.literal && i == len(os.Args)-1 {
 			pF.file = arg
+			break
+		} else if pF.source != "" && i == len(os.Args)-2 {
+			pF.file = os.Args[len(os.Args)-1]
 			break
 		}
 
@@ -62,9 +67,9 @@ func parseStruct() *ParameterFlags {
 		case "--directory":
 			pF.directory = true
 		case "-s":
-			pF.source = os.Args[i+1]
+			pF.source = os.Args[len(os.Args)-2]
 		case "--source":
-			pF.source = os.Args[i+1]
+			pF.source = os.Args[len(os.Args)-2]
 		case "-t":
 			pF.time = true
 		case "--time-elapsed":
@@ -86,6 +91,7 @@ func parseStruct() *ParameterFlags {
 	return &pF
 }
 
+// Main function of gofind.
 func main() {
 	// Start by parsing inputs
 	params := parseStruct()
@@ -143,6 +149,7 @@ func main() {
 	os.Exit(0)
 }
 
+// handleHelp prints out contents of help.txt to terminal
 func handleHelp() {
 	data, err := helpFile.ReadFile("stdout/help.txt")
 	if err != nil {
@@ -152,7 +159,16 @@ func handleHelp() {
 	fmt.Println(string(data))
 }
 
+// handleRegex searches for given file with regex.
 func handleRegex(input string, params *ParameterFlags) error {
+	// In case of source dir given, change working dir to source dir.
+	if params.source != "" {
+		if err := os.Chdir(params.source); err != nil {
+			fmt.Printf("error: %v\n", err)
+			return errors.New("failed to get source dir")
+		}
+	}
+
 	seqs := strings.Split(input, "*")
 
 	// TODO: Currently only supports one instance (e.g. "*.mp4")
@@ -197,6 +213,7 @@ func handleRegex(input string, params *ParameterFlags) error {
 	return nil
 }
 
+// Helper function that recursively searches through folder tree until match(es) found.
 func handleRegexHelper(entries []os.DirEntry, dir string, re *regexp.Regexp, params *ParameterFlags) error {
 	for i := range len(entries) {
 		entry := entries[i]
@@ -256,7 +273,16 @@ func handleRegexHelper(entries []os.DirEntry, dir string, re *regexp.Regexp, par
 	return errors.New("no match")
 }
 
+// handleInput searches for given input (FILE).
 func handleInput(input string, params *ParameterFlags) error {
+	// In case of source dir given, change working dir to source dir.
+	if params.source != "" {
+		if err := os.Chdir(params.source); err != nil {
+			fmt.Printf("error: %v\n", err)
+			return errors.New("failed to get source dir")
+		}
+	}
+
 	// Next, start to look for given file.
 	dir, err := os.Getwd()
 
@@ -292,6 +318,7 @@ func handleInput(input string, params *ParameterFlags) error {
 	return nil
 }
 
+// Helper function that recursively searches through folder tree until match(es) found.
 func helperFunction(entries []os.DirEntry, dir string, params *ParameterFlags) error {
 	for i := range len(entries) {
 		entry := entries[i]
