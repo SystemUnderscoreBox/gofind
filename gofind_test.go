@@ -27,14 +27,26 @@ func preTest(t *testing.T) {
 	if err != nil {
 		t.Errorf("could not run command: %v", err)
 	}
+
+	if err = os.Chdir(os.Getenv("HOME")); err != nil {
+		t.Errorf("could not run command: %v", err)
+	}
 }
 
 // By default, the tests are run from $HOME, so that proper
 // testing can be carried out.
 func Test_ValidInputs(t *testing.T) {
+	err := exec.Command("gofind", "gofind.go").Run()
+	if err != nil {
+		t.Errorf("TEST FAILED: %v", err)
+	}
 }
 
 // By default, the tests are run from $HOME, so that proper
 // testing can be carried out.
 func Test_InvalidInputs(t *testing.T) {
+	err := exec.Command("gofind", "gofind.bar").Run()
+	if err == nil {
+		t.Errorf("TEST FAILED: %v", err)
+	}
 }
