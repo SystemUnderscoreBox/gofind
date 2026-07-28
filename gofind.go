@@ -110,7 +110,7 @@ func main() {
 	if strings.Contains(findFile, "*") && len(findFile) == 1 {
 		fmt.Println("will not search for every file")
 		os.Exit(0)
-	} else if strings.Contains(findFile, "*") {
+	} else if strings.Contains(findFile, "*") && !params.literal {
 		t := time.Now()
 
 		// Use handleRegex for regex searches

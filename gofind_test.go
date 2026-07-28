@@ -40,6 +40,46 @@ func Test_ValidInputs(t *testing.T) {
 	if err != nil {
 		t.Errorf("TEST FAILED: %v", err)
 	}
+
+	err = exec.Command("gofind", "--help").Run()
+	if err != nil {
+		t.Errorf("TEST FAILED: %v", err)
+	}
+
+	err = exec.Command("gofind", "-l", "test-file.txt").Run()
+	if err != nil {
+		t.Errorf("TEST FAILED: %v", err)
+	}
+
+	err = exec.Command("gofind", "*.mp4").Run()
+	if err != nil {
+		t.Errorf("TEST FAILED: %v", err)
+	}
+
+	err = exec.Command("gofind", "-s", os.Getenv("HOME")+"/bin", "gofind").Run()
+	if err != nil {
+		t.Errorf("TEST FAILED: %v", err)
+	}
+
+	err = exec.Command("gofind", "-s", "-d", "/home", "Downloads").Run()
+	if err != nil {
+		t.Errorf("TEST FAILED: %v", err)
+	}
+
+	err = exec.Command("gofind", "-s", "-d", "/home", "*loads").Run()
+	if err != nil {
+		t.Errorf("TEST FAILED: %v", err)
+	}
+
+	err = exec.Command("gofind", "-t", "gofind.go").Run()
+	if err != nil {
+		t.Errorf("TEST FAILED: %v", err)
+	}
+
+	err = exec.Command("gofind", "-l", "*.mp4").Run()
+	if err != nil {
+		t.Errorf("TEST FAILED: %v", err)
+	}
 }
 
 // By default, the tests are run from $HOME, so that proper
