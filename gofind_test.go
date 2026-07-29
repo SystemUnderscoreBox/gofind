@@ -8,7 +8,6 @@ import (
 
 func Test_All(t *testing.T) {
 	preTest(t)
-
 	Test_ValidInputs(t)
 	Test_InvalidInputs(t)
 }
@@ -66,7 +65,7 @@ func Test_ValidInputs(t *testing.T) {
 		t.Errorf("TEST FAILED: %v", err)
 	}
 
-	err = exec.Command("gofind", "-s", "-d", "/home", "*loads").Run()
+	err = exec.Command("gofind", "-s", "-d", "/home", `"*loads"`).Run()
 	if err != nil {
 		t.Errorf("TEST FAILED: %v", err)
 	}

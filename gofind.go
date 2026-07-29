@@ -98,12 +98,10 @@ func main() {
 	if params == nil {
 		os.Exit(0)
 	}
-
 	if params.help {
 		handleHelp()
 		os.Exit(0)
 	}
-
 	findFile := params.file
 	// In case of regular expressions including one asterisk (*) in input
 	// Works (currently) for simple queries, e.g. *.pdf
