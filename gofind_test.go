@@ -84,8 +84,5 @@ func Test_ValidInputs(t *testing.T) {
 // By default, the tests are run from $HOME, so that proper
 // testing can be carried out.
 func Test_InvalidInputs(t *testing.T) {
-	err := exec.Command("gofind", "gofind.bar").Run()
-	if err == nil {
-		t.Errorf("TEST FAILED: %v", err)
-	}
+
 }

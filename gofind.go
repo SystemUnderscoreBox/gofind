@@ -196,7 +196,8 @@ func handleRegex(input string, params *ParameterFlags) error {
 	// "no match" means complete search has completed, regardless if found or not.
 	case "no match":
 		if len(matches) == 0 {
-			return errors.New("found no matches\n")
+			fmt.Println("found no matches")
+			return nil
 		}
 
 		for match := range len(matches) {
@@ -304,7 +305,8 @@ func handleInput(input string, params *ParameterFlags) error {
 	// "no match" means complete search has completed, regardless if found or not.
 	case "no match":
 		if len(matches) == 0 {
-			return errors.New("found no matches\n")
+			fmt.Println("found no matches")
+			return nil
 		}
 
 		for match := range len(matches) {
