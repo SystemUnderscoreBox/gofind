@@ -3,12 +3,13 @@ gofind — the replacement for the GNU/Linux bash command "find"
 ==============================================================
 
 Usage: gofind [-h | --help] [-d | --directory] [-t | --time-elapsed]
-       [-s | --source <path>] FILE
+       [-s | --source <path>] "FILE"
 Find the path(s) for FILE.
-Examples: gofind myfile.go
-          gofind myfile.*
+Examples: gofind "myfile.go"
+          gofind "*.mp4"
 NOTE: Include the suffix of file (e.g. '.go') in the input
-      for exact matches.
+      for exact matches. 
+NOTE: If "" emitted, correct matches NOT guaranteed!
 NOTE: Usage of '*' is not working properly, use with caution.
 
 Prompting only the binary file outputs this help content or

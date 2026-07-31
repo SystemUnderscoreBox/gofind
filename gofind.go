@@ -218,8 +218,11 @@ func handleRegexHelper(entries []os.DirEntry, dir string, re *regexp.Regexp, par
 
 		if entry.IsDir() {
 			// Use when searching for directories
-			if params.directory && params.file == entry.Name() {
+			if params.directory && re.MatchString(entry.Name()) {
+				dir = dir + "/" + entry.Name()
 				matches = append(matches, dir)
+				dir = strings.TrimSuffix(dir, entry.Name())
+				dir = strings.TrimSuffix(dir, "/")
 			}
 
 			dir = dir + "/" + entry.Name()
