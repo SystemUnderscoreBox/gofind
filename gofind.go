@@ -104,8 +104,7 @@ func main() {
 		os.Exit(0)
 	}
 	findFile := params.file
-	// In case of regular expressions including one asterisk (*) in input
-	// Works (currently) for simple queries, e.g. *.pdf
+	// In case of regular expressions including asterisks (*) in input
 	if strings.Contains(findFile, "*") && len(findFile) == 1 {
 		fmt.Println("will not search for every file")
 		os.Exit(0)
@@ -168,7 +167,7 @@ func handleRegex(input string, params *ParameterFlags) error {
 		}
 	}
 
-	pattern := ""
+	var pattern string
 	// Iterate over the given input to construct final pattern.
 	for seq := range strings.SplitSeq(input, "*") {
 		if strings.EqualFold(seq, "") {
@@ -179,21 +178,18 @@ func handleRegex(input string, params *ParameterFlags) error {
 	}
 	// Final constructed regex pattern (e.g. "*.mp4").
 	re, err := regexp.Compile(pattern)
-
 	if err != nil {
 		return err
 	}
 
 	// Next, start to look for given file.
 	dir, err := os.Getwd()
-
 	if err != nil {
 		fmt.Printf("error: %v\n", err)
 		return errors.New("failed to get current work dir")
 	}
 
 	entries, err := os.ReadDir(dir)
-
 	if err != nil {
 		fmt.Printf("error: %v\n", err)
 		return errors.New("failed to read dir entries")
@@ -295,14 +291,12 @@ func handleInput(input string, params *ParameterFlags) error {
 
 	// Next, start to look for given file.
 	dir, err := os.Getwd()
-
 	if err != nil {
 		fmt.Printf("error: %v\n", err)
 		return errors.New("failed to get current work dir")
 	}
 
 	entries, err := os.ReadDir(dir)
-
 	if err != nil {
 		fmt.Printf("error: %v\n", err)
 		return errors.New("failed to read dir entries")
