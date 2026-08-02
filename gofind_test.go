@@ -45,6 +45,9 @@ func preTest(t *testing.T) {
 	if err = os.Chdir(os.Getenv("HOME")); err != nil {
 		t.Errorf("could not run command: %v", err)
 	}
+
+	t.Log(exec.Command("ls").Run())
+	t.Log(exec.Command("ls bin").Run())
 }
 
 // By default, the tests are run from $HOME, so that proper
