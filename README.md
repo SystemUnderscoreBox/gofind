@@ -4,6 +4,20 @@
 
 A simple, zero-dependency, file search script through folders and subfolders. Written in Go.
 
+To get started compile gofind with a go-compiler:
+```bash
+user@linux:~/path/to/gofind$ go build
+user@linux:~/path/to/gofind$ ./gofind 'myfile.go'
+```
+You can make gofind into an executable:
+```bash
+user@linux:~/path/to/gofind$ go build && cd
+user@linux:~$ mkdir bin
+user@linux:~$ cd path/to/gofind
+user@linux:~/path/to/gofind$ cp gofind ~/bin && cd
+user@linux:~$ gofind '*.mp4' 
+```
+
 When calling gofind, write input with suffix (e.g. myfile.go) with citations. Use of citations heavily recommended when searching with regex pattern (*).
 
 (No LLMs were utilized during the production of gofind)
