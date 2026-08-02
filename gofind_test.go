@@ -21,6 +21,8 @@ func preTest(t *testing.T) {
 		t.Errorf("could not run command: %v", err)
 	}
 
+	t.Log(os.Getwd())
+
 	if err = os.Chdir(os.Getenv("HOME")); err != nil {
 		t.Errorf("could not run command: %v", err)
 	}
@@ -30,7 +32,7 @@ func preTest(t *testing.T) {
 		t.Errorf("mkdir failed: %v", err)
 	}
 
-	cmd = exec.Command("cp", "gofind/gofind/gofind", os.Getenv("HOME")+"/bin")
+	cmd = exec.Command("cp", "gofind", os.Getenv("HOME")+"/bin")
 	_, err = cmd.Output()
 	if err != nil {
 		t.Errorf("could not run command: %v", err)
