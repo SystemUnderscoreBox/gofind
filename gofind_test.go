@@ -45,7 +45,17 @@ func Test_ValidInputs(t *testing.T) {
 		t.Errorf("TEST FAILED: %v", err)
 	}
 
+	err = exec.Command("gofind", "-h").Run()
+	if err != nil {
+		t.Errorf("TEST FAILED: %v", err)
+	}
+
 	err = exec.Command("gofind", "-l", "test-file.txt").Run()
+	if err != nil {
+		t.Errorf("TEST FAILED: %v", err)
+	}
+
+	err = exec.Command("gofind", "--literal", "test-file.txt").Run()
 	if err != nil {
 		t.Errorf("TEST FAILED: %v", err)
 	}
@@ -60,6 +70,11 @@ func Test_ValidInputs(t *testing.T) {
 		t.Errorf("TEST FAILED: %v", err)
 	}
 
+	err = exec.Command("gofind", "--source", os.Getenv("HOME")+"/bin", "gofind").Run()
+	if err != nil {
+		t.Errorf("TEST FAILED: %v", err)
+	}
+
 	err = exec.Command("gofind", "-s", "-d", "/home", "Downloads").Run()
 	if err != nil {
 		t.Errorf("TEST FAILED: %v", err)
@@ -70,12 +85,32 @@ func Test_ValidInputs(t *testing.T) {
 		t.Errorf("TEST FAILED: %v", err)
 	}
 
+	err = exec.Command("gofind", "--source", "--directory", "/home", `"*loads"`).Run()
+	if err != nil {
+		t.Errorf("TEST FAILED: %v", err)
+	}
+
 	err = exec.Command("gofind", "-t", "gofind.go").Run()
 	if err != nil {
 		t.Errorf("TEST FAILED: %v", err)
 	}
 
+	err = exec.Command("gofind", "--time-elapsed", "gofind.go").Run()
+	if err != nil {
+		t.Errorf("TEST FAILED: %v", err)
+	}
+
 	err = exec.Command("gofind", "-l", "*.mp4").Run()
+	if err != nil {
+		t.Errorf("TEST FAILED: %v", err)
+	}
+
+	err = exec.Command("gofind", "--literal", "*.mp4").Run()
+	if err != nil {
+		t.Errorf("TEST FAILED: %v", err)
+	}
+
+	err = exec.Command("gofind", "*find*").Run()
 	if err != nil {
 		t.Errorf("TEST FAILED: %v", err)
 	}

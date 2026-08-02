@@ -98,7 +98,8 @@ func main() {
 	if params == nil {
 		os.Exit(0)
 	}
-	if params.help {
+	// If only prompted with gofind or with help flag, exit with code 0.
+	if params.help || len(os.Args) == 1 {
 		handleHelp()
 		os.Exit(0)
 	}
@@ -167,10 +168,17 @@ func handleRegex(input string, params *ParameterFlags) error {
 		}
 	}
 
-	seqs := strings.Split(input, "*")
-
-	// TODO: Currently only supports one instance (e.g. "*.mp4")
-	re, err := regexp.Compile(".*(" + seqs[1] + ")")
+	pattern := ""
+	// Iterate over the given input to construct final pattern.
+	for seq := range strings.SplitSeq(input, "*") {
+		if strings.EqualFold(seq, "") {
+			pattern = pattern + ".*"
+		} else {
+			pattern = pattern + seq
+		}
+	}
+	// Final constructed regex pattern (e.g. "*.mp4").
+	re, err := regexp.Compile(pattern)
 
 	if err != nil {
 		return err
@@ -193,7 +201,7 @@ func handleRegex(input string, params *ParameterFlags) error {
 
 	// Call this function recursively.
 	switch err := handleRegexHelper(entries, dir, re, params); err.Error() {
-	// "no match" means complete search has completed, regardless if found or not.
+	// "no match" means search has completed, regardless if found or not.
 	case "no match":
 		if len(matches) == 0 {
 			fmt.Println("found no matches")
@@ -302,7 +310,7 @@ func handleInput(input string, params *ParameterFlags) error {
 
 	// Call this function recursively in case of nested folders.
 	switch err := helperFunction(entries, dir, params); err.Error() {
-	// "no match" means complete search has completed, regardless if found or not.
+	// "no match" means earch has completed, regardless if found or not.
 	case "no match":
 		if len(matches) == 0 {
 			fmt.Println("found no matches")
