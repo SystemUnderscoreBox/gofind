@@ -7,54 +7,8 @@ import (
 )
 
 func Test_All(t *testing.T) {
-	preTest(t)
 	Test_ValidInputs(t)
 	Test_InvalidInputs(t)
-}
-
-// Used only to run shell commands before testing.
-// That is, compile and copy to executable file path.
-func preTest(t *testing.T) {
-	cmd := exec.Command("go", "build")
-	_, err := cmd.Output()
-	if err != nil {
-		t.Errorf("could not run command: %v", err)
-	}
-
-	pwd, _ := os.Getwd()
-
-	t.Log(os.Getwd())
-
-	if err = os.Chdir(os.Getenv("HOME")); err != nil {
-		t.Errorf("could not run command: %v", err)
-	}
-
-	t.Log(os.Getwd())
-
-	err = os.Mkdir("bin", 0750)
-	if err != nil && !os.IsExist(err) {
-		t.Errorf("mkdir failed: %v", err)
-	}
-
-	t.Log(os.Getwd())
-
-	if err = os.Chdir(pwd); err != nil {
-		t.Errorf("could not run command: %v", err)
-	}
-
-	t.Log(os.Getwd())
-
-	cmd = exec.Command("cp", "gofind", os.Getenv("HOME")+"/bin")
-	_, err = cmd.Output()
-	if err != nil {
-		t.Errorf("could not run command: %v", err)
-	}
-
-	if err = os.Chdir(os.Getenv("HOME")); err != nil {
-		t.Errorf("could not run command: %v", err)
-	}
-
-	t.Log(os.Getwd())
 }
 
 // By default, the tests are run from $HOME, so that proper
