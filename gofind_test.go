@@ -46,8 +46,7 @@ func preTest(t *testing.T) {
 		t.Errorf("could not run command: %v", err)
 	}
 
-	t.Log(exec.Command("ls").Run())
-	t.Log(exec.Command("ls bin").Run())
+	t.Log(os.Getwd())
 }
 
 // By default, the tests are run from $HOME, so that proper
