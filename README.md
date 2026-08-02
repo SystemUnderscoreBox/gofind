@@ -18,6 +18,6 @@ user@linux:~/path/to/gofind$ cp gofind ~/bin && cd
 user@linux:~$ gofind '*.mp4' 
 ```
 
-When calling gofind, write input with suffix (e.g. myfile.go) with citations. Use of citations heavily recommended when searching with regex pattern (*).
+When calling gofind, write input with suffix (e.g. myfile.go) with citations for accurate findings. Use of citations heavily recommended when searching with regex pattern (*).
 
 (No LLMs were utilized during the production of gofind)
