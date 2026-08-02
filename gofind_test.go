@@ -14,6 +14,10 @@ func Test_All(t *testing.T) {
 // By default, the tests are run from $HOME, so that proper
 // testing can be carried out.
 func Test_ValidInputs(t *testing.T) {
+
+	dir, _ := os.Getwd()
+	t.Log(os.ReadDir(dir))
+
 	err := exec.Command("gofind", "gofind.go").Run()
 	if err != nil {
 		t.Errorf("TEST FAILED: %v", err)
