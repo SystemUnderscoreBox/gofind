@@ -3,6 +3,10 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](/LICENSE)
 
 A simple, zero-dependency, file search script through folders and subfolders. Written in Go.
+Gofind's time complexity follows a linear search: O(n). Meaning that it is recommended to NOT initiate
+gofind from a starting point that includes a lot of data, e.g. from root '/'.
+
+Further development of more efficient searching algorithm PoCs will be studied in the near-future.
 
 To get started compile gofind with a go-compiler:
 ```bash
