@@ -19,7 +19,7 @@ You can make gofind into an executable:
 ```bash
 user@linux:~/path/to/gofind$ go build && cd
 user@linux:~$ mkdir bin
-user@linux:~$ cd path/to/gofind
+user@linux:~$ cd -
 user@linux:~/path/to/gofind$ cp gofind ~/bin && cd
 user@linux:~$ gofind '*.mp4' 
 ```
