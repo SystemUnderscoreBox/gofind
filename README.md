@@ -8,9 +8,9 @@ gofind from a starting point that includes a lot of data, e.g. from root '/'.
 
 Further development of more efficient searching algorithm PoCs will be studied in the near-future.
 
-To get started compile gofind with a go-compiler:
+To get started with gofind you need a go-compiler for your own OS.
 
-(For linux):
+(Example Ubuntu/Linux):
 ```bash
 user@linux:~/path/to/gofind$ go build
 user@linux:~/path/to/gofind$ ./gofind 'myfile.go'
