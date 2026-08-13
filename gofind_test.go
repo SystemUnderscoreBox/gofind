@@ -54,27 +54,27 @@ func Test_ValidInputs(t *testing.T) {
 		t.Errorf("TEST FAILED: %v", err)
 	}
 
-	err = exec.Command("./gofind", "-s", "-d", "/home", "Downloads").Run()
+	err = exec.Command("./gofind", "-d", "-s", "/home", "Downloads").Run()
 	if err != nil {
 		t.Errorf("TEST FAILED: %v", err)
 	}
 
-	err = exec.Command("./gofind", "-s", "-d", "/home", `"*loads"`).Run()
+	err = exec.Command("./gofind", "-d", "-s", "/home", `"*loads"`).Run()
 	if err != nil {
 		t.Errorf("TEST FAILED: %v", err)
 	}
 
-	err = exec.Command("./gofind", "--source", "--directory", "/home", `"*loads"`).Run()
+	err = exec.Command("./gofind", "--directory", "--source", "/home", `"*loads"`).Run()
 	if err != nil {
 		t.Errorf("TEST FAILED: %v", err)
 	}
 
-	err = exec.Command("./gofind", "-t", "./gofind.go").Run()
+	err = exec.Command("./gofind", "-t", "gofind.go").Run()
 	if err != nil {
 		t.Errorf("TEST FAILED: %v", err)
 	}
 
-	err = exec.Command("./gofind", "--time-elapsed", "./gofind.go").Run()
+	err = exec.Command("./gofind", "--time-elapsed", "gofind.go").Run()
 	if err != nil {
 		t.Errorf("TEST FAILED: %v", err)
 	}
@@ -90,6 +90,16 @@ func Test_ValidInputs(t *testing.T) {
 	}
 
 	err = exec.Command("./gofind", "*find*").Run()
+	if err != nil {
+		t.Errorf("TEST FAILED: %v", err)
+	}
+
+	err = exec.Command("./gofind", "-S", "stdout", "gofind.go").Run()
+	if err != nil {
+		t.Errorf("TEST FAILED: %v", err)
+	}
+
+	err = exec.Command("./gofind", "-s", "/home", "--skip", "Downloads", "gofind.go").Run()
 	if err != nil {
 		t.Errorf("TEST FAILED: %v", err)
 	}

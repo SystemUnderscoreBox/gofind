@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -27,6 +28,7 @@ type ParameterFlags struct {
 	verbose   bool
 	directory bool
 	source    string
+	skip      []string
 	time      bool
 	help      bool
 	file      string
@@ -67,9 +69,13 @@ func parseStruct() *ParameterFlags {
 		case "--directory":
 			pF.directory = true
 		case "-s":
-			pF.source = os.Args[len(os.Args)-2]
+			pF.source = parseSourceInput(i)
 		case "--source":
-			pF.source = os.Args[len(os.Args)-2]
+			pF.source = parseSourceInput(i)
+		case "-S":
+			pF.skip = parseSkipInput(i)
+		case "--skip":
+			pF.skip = parseSkipInput(i)
 		case "-t":
 			pF.time = true
 		case "--time-elapsed":
@@ -82,13 +88,29 @@ func parseStruct() *ParameterFlags {
 			pF.literal = true
 		case "--literal":
 			pF.literal = true
-		default:
-			fmt.Println("unknown input: use --help for list of flags")
-			return nil
+
 		}
 	}
 
 	return &pF
+}
+
+// Helper function for parsing the input when -s/--source is used.
+func parseSourceInput(i int) string {
+	return os.Args[i+1]
+}
+
+// Helper function for parsing the input when -S/--skip flag is used.
+func parseSkipInput(i int) []string {
+	var skips []string
+
+	for file := range strings.SplitSeq(os.Args[i+1], " ") {
+		if file == "" {
+			continue
+		}
+		skips = append(skips, file)
+	}
+	return skips
 }
 
 // Main function of gofind.
@@ -222,6 +244,13 @@ func handleRegexHelper(entries []os.DirEntry, dir string, re *regexp.Regexp, par
 		entry := entries[i]
 
 		if entry.IsDir() {
+			if slices.Index(params.skip, entry.Name()) != -1 {
+				if params.verbose {
+					fmt.Printf("skipping directory: %s\n", dir+"/"+entry.Name())
+				}
+				continue
+			}
+
 			// Use when searching for directories
 			if params.directory && re.MatchString(entry.Name()) {
 				dir = dir + "/" + entry.Name()
@@ -329,6 +358,13 @@ func helperFunction(entries []os.DirEntry, dir string, params *ParameterFlags) e
 		entry := entries[i]
 
 		if entry.IsDir() {
+			if slices.Index(params.skip, entry.Name()) != -1 {
+				if params.verbose {
+					fmt.Printf("skipping directory: %s\n", dir+"/"+entry.Name())
+				}
+				continue
+			}
+
 			// Use when searching for directories
 			if params.directory && params.file == entry.Name() {
 				matches = append(matches, dir)
