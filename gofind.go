@@ -36,7 +36,7 @@ type ParameterFlags struct {
 }
 
 // parseStruct reads input flags as populates ParameterFlags.
-func parseStruct() *ParameterFlags {
+func parseStruct() (*ParameterFlags, error) {
 	pF := ParameterFlags{}
 
 	for i, arg := range os.Args {
@@ -54,9 +54,12 @@ func parseStruct() *ParameterFlags {
 		} else if pF.literal && i == len(os.Args)-1 {
 			pF.file = arg
 			break
-		} else if pF.source != "" && i == len(os.Args)-2 {
-			pF.file = os.Args[len(os.Args)-1]
-			break
+		}
+
+		// Continue if previous flag was -s or -S.
+		// This way the next argument will not be handled by the switch-case default.
+		if os.Args[i-1] == "-s" || os.Args[i-1] == "--source" || os.Args[i-1] == "-S" || os.Args[i-1] == "--skip" {
+			continue
 		}
 
 		switch arg {
@@ -69,9 +72,9 @@ func parseStruct() *ParameterFlags {
 		case "--directory":
 			pF.directory = true
 		case "-s":
-			pF.source = parseSourceInput(i)
+			pF.source = os.Args[i+1]
 		case "--source":
-			pF.source = parseSourceInput(i)
+			pF.source = os.Args[i+1]
 		case "-S":
 			pF.skip = parseSkipInput(i)
 		case "--skip":
@@ -88,16 +91,12 @@ func parseStruct() *ParameterFlags {
 			pF.literal = true
 		case "--literal":
 			pF.literal = true
-
+		default:
+			fmt.Printf("unknown flag: %v\n", arg)
+			return nil, errors.New("invalid flag input")
 		}
 	}
-
-	return &pF
-}
-
-// Helper function for parsing the input when -s/--source is used.
-func parseSourceInput(i int) string {
-	return os.Args[i+1]
+	return &pF, nil
 }
 
 // Helper function for parsing the input when -S/--skip flag is used.
@@ -116,8 +115,9 @@ func parseSkipInput(i int) []string {
 // Main function of gofind.
 func main() {
 	// Start by parsing inputs
-	params := parseStruct()
+	params, err := parseStruct()
 	if params == nil {
+		fmt.Printf("struct parsing failed: %v\n", err)
 		os.Exit(0)
 	}
 	// If only prompted with gofind or with help flag, exit with code 0.
@@ -135,7 +135,7 @@ func main() {
 
 		// Use handleRegex for regex searches
 		if err := handleRegex(findFile, params); err != nil {
-			fmt.Printf("find failed, error: %v", err)
+			fmt.Printf("find failed, error: %v\n", err)
 			e := time.Now()
 			if params.time {
 				fmt.Println("time elapsed: " + strconv.FormatFloat(e.Sub(t).Seconds(), 'f', -1, 64) + " seconds")
@@ -153,7 +153,7 @@ func main() {
 
 	t := time.Now()
 	if err := handleInput(findFile, params); err != nil {
-		fmt.Printf("find failed, error: %v", err)
+		fmt.Printf("find failed, error: %v\n", err)
 		e := time.Now()
 		if params.time {
 			fmt.Println("time elapsed: " + strconv.FormatFloat(e.Sub(t).Seconds(), 'f', -1, 64) + " seconds")
