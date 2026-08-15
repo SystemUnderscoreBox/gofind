@@ -4,8 +4,8 @@ gofind — the replacement for the GNU/Linux bash command "find"
 
 Usage: gofind [-h | --help] [-d | --directory] [-t | --time-elapsed]
        [-s | --source <path>] [-S | --skip <directories>] [-v |--verbose]
-       [-l |--literal] "FILE"
-Find the path(s) for FILE.
+       [-l |--literal] [-c | --case-insensitive] "OBJECT"
+Find the path(s) for OBJECT.
 Examples: gofind "myfile.go"
           gofind "*.mp4"
           gofind -s "Documents" -S "foo bar" -v "mypdf.pdf"
@@ -18,13 +18,15 @@ Prompting only the binary file outputs this help content or
 with '--help'. Below is a list of supported commands.
 
 Output control:
-    -d, --directory      search for directories
-    -t, --time-elapsed   include time elapsed in output
-    -s, --source         specify source path
-    -S, --skip           specify which folder(s) to skip during search
-                         (input the skipped items as one string, 
-                         e.g. gofind -S "Downloads Documents Images" "my.pdf")
-    -v, --verbose        outputs every search gofind does
-    -l, --literal        search for literal FILE name (e.g. literal "*.pdf")
+    -d, --directory        search for directories
+    -t, --time-elapsed     include time elapsed in output
+    -s, --source           specify source path
+    -S, --skip             specify which folder(s) to skip during search
+                           (input the skipped items as one string, 
+                           e.g. gofind -S "Downloads Documents Images" "my.pdf")
+    -v, --verbose          outputs every search gofind does
+    -l, --literal          search for literal OBJECT name (e.g. literal "*.pdf")
+    -c, --case-insensitive search for OBJECT with case insensitive
+                           (default is false)
 
 Report bugs to Github: <https://github.com/SystemUnderscoreBox/gofind>

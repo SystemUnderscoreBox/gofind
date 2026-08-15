@@ -25,14 +25,15 @@ var (
 
 // Struct containing all available flags
 type ParameterFlags struct {
-	verbose   bool
-	directory bool
-	source    string
-	skip      []string
-	time      bool
-	help      bool
-	file      string
-	literal   bool
+	verbose         bool
+	directory       bool
+	source          string
+	skip            []string
+	time            bool
+	help            bool
+	file            string
+	literal         bool
+	caseInsensitive bool
 }
 
 // parseStruct reads input flags as populates ParameterFlags.
@@ -49,6 +50,10 @@ func parseStruct() (*ParameterFlags, error) {
 		// Handle also literal and non-literal file names
 		// Handle case when source dir is given and index on source, break and populate pF.file
 		if !pF.literal && i == len(os.Args)-1 && !strings.Contains(arg, "-") {
+			if pF.caseInsensitive {
+				pF.file = strings.ToLower(arg)
+				break
+			}
 			pF.file = arg
 			break
 		} else if pF.literal && i == len(os.Args)-1 {
@@ -91,6 +96,10 @@ func parseStruct() (*ParameterFlags, error) {
 			pF.literal = true
 		case "--literal":
 			pF.literal = true
+		case "-c":
+			pF.caseInsensitive = true
+		case "--case-insensitive":
+			pF.caseInsensitive = true
 		default:
 			fmt.Printf("unknown flag: %v\n", arg)
 			return nil, errors.New("invalid flag input")
@@ -365,7 +374,7 @@ func helperFunction(entries []os.DirEntry, dir string, params *ParameterFlags) e
 				continue
 			}
 
-			// Use when searching for directories
+			// Use when searching for directories.
 			if params.directory && params.file == entry.Name() {
 				matches = append(matches, dir)
 			}
